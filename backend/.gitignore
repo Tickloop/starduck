@@ -1,0 +1,5 @@
+# Stores the compiled python files
+__pycache__/
+
+# Stores the files downloaded from the internet
+tmp/
