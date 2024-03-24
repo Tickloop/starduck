@@ -28,7 +28,6 @@ def download_audio(video_id):
 @app.get('/video/<video_id>')
 @cross_origin(origins='http://localhost:5173')
 def get_video(video_id):
-    print(video_id)
     try:
         yt = YouTube(f'https://www.youtube.com/watch?v={video_id}')
         ch = Channel(yt.channel_url)
@@ -55,3 +54,6 @@ def post_video(video_id):
 @app.get('/')
 def index():
     return render_template('index.html')
+
+if __name__ == '__main__':
+	app.run(host='0.0.0.0', port=5000)
