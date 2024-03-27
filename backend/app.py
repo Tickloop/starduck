@@ -1,5 +1,5 @@
 from flask import Flask, send_file, make_response, render_template
-from flask_cors import CORS, cross_origin
+from flask_cors import CORS
 from pytube import YouTube, Channel
 import os
 import ffmpeg
@@ -8,6 +8,7 @@ app = Flask(__name__,
             static_folder='../ui/dist',
             static_url_path='/',
             template_folder='../ui/dist')
+
 CORS(app)
 
 def download_audio(video_id):
@@ -26,7 +27,6 @@ def download_audio(video_id):
     return default_filename
 
 @app.get('/video/<video_id>')
-@cross_origin(origins='http://localhost:5173')
 def get_video(video_id):
     try:
         yt = YouTube(f'https://www.youtube.com/watch?v={video_id}')
@@ -44,7 +44,6 @@ def get_video(video_id):
     }
 
 @app.post('/video/<video_id>')
-@cross_origin(origins='http://localhost:5173')
 def post_video(video_id):
     filename = download_audio(video_id)
     response = make_response(send_file(filename, as_attachment=True))
@@ -56,4 +55,4 @@ def index():
     return render_template('index.html')
 
 if __name__ == '__main__':
-	app.run(host='0.0.0.0', port=5000)
+	app.run(host='0.0.0.0', port=8000)

@@ -34,4 +34,4 @@ ENTRYPOINT ["python3"]
 CMD ["app.py"]
 
 # expose the port
-EXPOSE 5000
+EXPOSE 8000

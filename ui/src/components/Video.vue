@@ -13,7 +13,7 @@ const numToKMB = (num) => {
 
 const downloadVideo = (video_id) => {
     // send a post request to server at /video/video_id with the video_id
-    fetch(`http://localhost:5000/video/${video_id}`, { method: 'POST' })
+    fetch(`http://localhost:8000/video/${video_id}`, { method: 'POST' })
     .then(response => {
         const filename = response.headers
             .get('Content-Disposition')

@@ -32,7 +32,7 @@ const searchVideo = async () => {
         .replace('https://youtu.be/', '')
         .replace('https://www.youtube.com/shorts/', '')
 
-    fetch(`http://localhost:5000/video/${video_id}`)
+    fetch(`http://localhost:8000/video/${video_id}`)
     .then(response => response.json())
     .then(data => {
         if('error' in data) {
