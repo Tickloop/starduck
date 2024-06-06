@@ -4,22 +4,7 @@ import Video from '@/components/Video.vue';
 
 const url = ref('');
 const isLoading = ref(true);
-const video = ref({
-    title: '',
-    thumbnail: '',
-    channelName: '',
-    views: '',
-    video_id: '',
-});
-
-function setVideo(data) {
-    video.value.title = data.title;
-    video.value.thumbnail = data.thumbnail;
-    video.value.channelName = data.channelName;
-    video.value.views = data.views;
-    video.value.video_id = data.video_id;
-    isLoading.value = false;
-}
+const videos = ref([]);
 
 const searchVideo = async () => {
     if(url.value == '') {
@@ -28,18 +13,17 @@ const searchVideo = async () => {
 
     isLoading.value = true;
     const video_id = url.value
-        .replace('https://www.youtube.com/watch?v=', '')
-        .replace('https://youtu.be/', '')
-        .replace('https://www.youtube.com/shorts/', '')
 
-    fetch(`http://localhost:8000/video/${video_id}`)
+    fetch(`http://localhost:8000/video/${encodeURIComponent(video_id)}`)
     .then(response => response.json())
     .then(data => {
         if('error' in data) {
             console.error('Error fetching video: ', data.error, video_id)
             return
         }
-        setVideo(data);
+        console.log(data);
+        videos.value = data;
+        isLoading.value = false;
     })
     .catch(error => {
         console.error('Error fetching video: ', error, video_id)
@@ -61,7 +45,7 @@ const searchVideo = async () => {
 
     <div class="grid-nogutter mt-2 pl-3 pr-3" v-if="url != ''">
         <div class="col-12 p-0">
-            <Video :title="video.title" :thumbnail="video.thumbnail" :channelName="video.channelName" :views="video.views" :video_id="video.video_id" v-if="!isLoading" />
+            <Video :title="video.title" :thumbnail="video.thumbnail" :channelName="video.channelName" :views="video.views" :video_id="video.video_id" v-if="!isLoading" v-for="video in videos"/>
 
             <div class="border-round border-1 surface-border p-4" v-if="isLoading">
                 <ul class="m-0 p-0 list-none">

@@ -1,8 +1,9 @@
 from flask import Flask, send_file, make_response, render_template
 from flask_cors import CORS
-from pytube import YouTube, Channel
-import os
+from pytube import YouTube, Channel, Playlist
+import os, re
 import ffmpeg
+from typing import List
 
 app = Flask(__name__,
             static_folder='../ui/dist',
@@ -26,14 +27,13 @@ def download_audio(video_id):
     os.remove('tmp/tmp.webm')
     return default_filename
 
-@app.get('/video/<video_id>')
-def get_video(video_id):
+def videoFlow(video_id):
     try:
         yt = YouTube(f'https://www.youtube.com/watch?v={video_id}')
         ch = Channel(yt.channel_url)
     except:
         return {
-            'error': 'Invalid URL'
+            'error': 'Invalid Video URL'
         }
     return {
         'title': yt.title,
@@ -41,6 +41,31 @@ def get_video(video_id):
         'channelName': ch.channel_name,
         'views': yt.views,
         'video_id': video_id,
+    }
+
+def playlistFlow(list_id):
+    try:
+        pl = Playlist(f'https://www.youtube.com/playlist?list={list_id}')
+        return [ videoFlow(v.video_id) for v in pl.videos ]
+    except:
+        return {
+            'error': 'Invalid Playlist URL'
+        }
+
+@app.get('/video/<path:link>')
+def get_video(link) -> List:
+    VID_URL_PATTERN = '\/watch\?v=(.+)'
+    LIST_URL_PATTERN = '\/playlist\?list=(.+)'
+    video_id = re.findall(VID_URL_PATTERN, link, re.S)
+    if video_id:
+        return [ videoFlow(video_id[0]) ]
+
+    list_id = re.findall(LIST_URL_PATTERN, link, re.S)
+    if list_id:
+        return playlistFlow(list_id[0])
+    
+    return {
+        'error': 'Invalid URL'
     }
 
 @app.post('/video/<video_id>')
